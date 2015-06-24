@@ -1,5 +1,8 @@
 #!/bin/bash
 
+INSTALLED_VERSION=`dpkg -l | grep plexmediaserver | awk '{ print $3; }'`
+echo "Installed version: $INSTALLED_VERSION"
+
 ARCH=`uname -p`
 if [ ${ARCH} == "i686" ]; then
   BIT="32"
@@ -22,20 +25,27 @@ if [ $? -eq 0 ]; then
   DIST="CentOS"
 fi
 
-echo 'Fetching current version name...'
 text=`curl -s https://plex.tv/downloads | grep ${DIST}${BIT}`
 regex='(<a\ +href=\")([^\"]+)(\".*>)'
 [[ $text =~ $regex ]]
 
 file=`echo ${BASH_REMATCH[2]}`
-echo $file
 regex='(.*/)(plexmedia.*[deb|rpm])(.*)'
 [[ $file =~ $regex ]]
 filename=`echo ${BASH_REMATCH[2]}`
-echo $filename
 
+regex='(plex-media-server/)([^\/]+)(.*)'
+[[ $file =~ $regex ]]
+newversion=`echo ${BASH_REMATCH[2]}`
+echo "New version:       $newversion"
+
+if [ $INSTALLED_VERSION == $newversion ]; then
+  echo "Already have latest version."
+  exit 1
+fi
 echo 'Fetching current file...'
-wget -c $file
+#wget -c $file
+curl -o $filename $file
 
 echo 'Installing new version...'
 if [ ${DIST} == "Ubuntu" ]; then
