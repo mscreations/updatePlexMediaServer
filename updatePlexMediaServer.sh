@@ -45,7 +45,7 @@ if [ $INSTALLED_VERSION == $newversion ]; then
 fi
 echo 'Fetching current file...'
 #wget -c $file
-curl -o $filename $file
+sudo curl -o $filename $file
 
 echo 'Installing new version...'
 if [ ${DIST} == "Ubuntu" ]; then
@@ -55,4 +55,4 @@ else
 fi
 
 echo 'Cleaning up...'
-rm -f $filename
+sudo rm -f $filename
