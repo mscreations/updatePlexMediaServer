@@ -39,6 +39,10 @@ regex='(plex-media-server/)([^\/]+)(.*)'
 newversion=`echo ${BASH_REMATCH[2]}`
 echo "New version:       $newversion"
 
+if [ "$1" == "-s" ]; then
+  exit 0
+fi
+
 if [ $INSTALLED_VERSION == $newversion ]; then
   echo "Already have latest version."
   exit 1
@@ -46,6 +50,14 @@ fi
 echo 'Fetching current file...'
 #wget -c $file
 sudo curl -o $filename $file
+
+if [ $? != 0 ]; then
+  sudo rm -f $filename
+  echo
+  echo
+  echo "ABORTED"
+  exit 1
+fi
 
 echo 'Installing new version...'
 if [ ${DIST} == "Ubuntu" ]; then
